@@ -1,0 +1,45 @@
+name: shopsphere
+services:
+  base-de-datos:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_DATABASE: ecomdb
+    volumes:
+      - datos-mysql:/var/lib/mysql
+    networks:
+      - red-shopsphere
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot1234"]
+      interval: 5s
+      retries: 20
+
+  backend:
+    build: ./Ecommerce-Backend
+    environment:
+      DB_URL: jdbc:mysql://base-de-datos:3306/ecomdb?allowPublicKeyRetrieval=true&useSSL=false
+      DB_USER: root
+      DB_PASSWORD: root1234
+      SQL_INIT_MODE: never
+    depends_on:
+      base-de-datos:
+        condition: service_healthy
+    networks:
+      - red-shopsphere
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./Ecommerce-Frontend
+    depends_on:
+      - backend
+    networks:
+      - red-shopsphere
+    ports:
+      - "3000:80"
+
+networks:
+  red-shopsphere:
+
+volumes:
+  datos-mysql:
