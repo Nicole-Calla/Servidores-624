@@ -1,5 +1,6 @@
 package com.cart.ecom_proj.controller;
 
+import jakarta.persistence.Column;
 import com.cart.ecom_proj.model.Product;
 import com.cart.ecom_proj.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
